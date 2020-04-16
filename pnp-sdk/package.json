@@ -1,0 +1,10 @@
+{
+  "name": "@pnp/sdk",
+  "version": "0.0.0",
+  "main": "index",
+  "typings": "index.d.ts",
+  "dependencies": {
+    "google-protobuf": "^3.11.3",
+    "grpc-web": "^1.0.7"
+  }
+}
