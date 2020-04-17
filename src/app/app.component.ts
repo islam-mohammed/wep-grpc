@@ -15,16 +15,26 @@ export class AppComponent implements OnInit {
   constructor(private assetsService: AssetsService) {}
 
   ngOnInit() {
-   this.assetsListSubscription = this.assetsService.listAssets('APP_ASSETS').pipe(
-     catchError(error => {
-        this.title= error?.message;
-        return of(error?.message);
-      })
-   ).subscribe((assets: Assets) => {
-    assets.forEach(asset => {
-      this.title += asset[0] + '<br>';
+  const assetsObserverObject = {
+    next: (assets: Assets) => {
+        assets.forEach(asset => {
+        this.title += asset[0] + '<br>';
+      });
+    },
+    error: err => {
+      console.error('Assets observer got an error: ' + err);
+      this.title = err;
+    }
+  };
+  this.assetsListSubscription = this.assetsService.listAssets('APP_ASSETS').pipe(
+    catchError(error => {
+      this.title= error?.message;
+      return of(error?.message);
     })
-   }) ;
+   ).subscribe(assetsObserverObject)
+  }
+  ngOnDestroy() {
+    this.assetsListSubscription.unsubscribe();
   }
 }
 
