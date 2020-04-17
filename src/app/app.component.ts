@@ -1,7 +1,7 @@
+import { AssetsService, Assets } from './services/assets.service';
 import { Component, OnInit } from '@angular/core';
-import * as grpcWeb from "grpc-web"
-import { AssetServiceClient, ListAssetsRequest, ListAssetsResponse } from 'pnp-sdk';
-import { environment } from 'src/environments/environment';
+import { Subscription, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +9,22 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'gRPC';
+  assetsListSubscription: Subscription;
+  title = '';
+
+  constructor(private assetsService: AssetsService) {}
 
   ngOnInit() {
-    const assetsService = new AssetServiceClient(environment.pnp_grpc_api);
-    const request = new ListAssetsRequest();
-    request.setName("APP_ASSETS");
-    const meta = {
-       'accept-language': 'en',
-       'x-pnp-client-platform': 'web_app_desktop'
-    }
-    assetsService.listAssets(request, meta, (err, response: ListAssetsResponse) => {
-      if (err) {
-        console.log(err.code);
-        console.log(err.message);
-      } else {
-        console.log(response.toObject().assetsMap);
-      }
-    });
+   this.assetsListSubscription = this.assetsService.listAssets('APP_ASSETS').pipe(
+     catchError(error => {
+        this.title= error?.message;
+        return of(error?.message);
+      })
+   ).subscribe((assets: Assets) => {
+    assets.forEach(asset => {
+      this.title += asset[0] + '<br>';
+    })
+   }) ;
   }
 }
+
