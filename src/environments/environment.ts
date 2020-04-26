@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  pnp_grpc_api: 'http://beta1.portablenorthpole.com:80'
+  pnp_grpc_api: 'http://api-beta1.portablenorthpole.com:80'
 };
 
 /*

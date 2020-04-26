@@ -11,7 +11,9 @@ export class AssetsService {
   constructor(private assetsServiceClient: AssetServiceClient) {}
 
   listAssets(name: string): Observable<Assets> {
+    // const enableDevTools = window['__GRPCWEB_DEVTOOLS__'] || (() => {});
     const listAssetsRequest = new ListAssetsRequest();
+    // enableDevTools([listAssetsRequest]);
     listAssetsRequest.setName(name);
     const metaData = {
        'accept-language': 'en',
@@ -19,12 +21,10 @@ export class AssetsService {
     };
     return Observable.create((observer: Observer<Assets>) => {
       this.assetsServiceClient.listAssets(listAssetsRequest, metaData, (err: grpcWeb.Error, listAssetsResponse: ListAssetsResponse ) => {
+        // this code not excuting !!
         if(err) {
-          console.log(err.code);
-          console.log(err.message);
           observer.error(new Error(err.message));
         } else {
-          console.log(listAssetsResponse.toObject().assetsMap);
           observer.next(listAssetsResponse.toObject().assetsMap);
           observer.complete();
         }
